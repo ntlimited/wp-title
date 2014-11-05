@@ -32,7 +32,7 @@ isolated system for hosting code. Importantly, if you're on a system
 where you don't have root access, this will allow you to install things
 without needing root (although you also won't install it globally). To
 begin with, create a copy of the source, either by downloading a source
-archive (_wp-title.0.1.0.zip_, etc) or cloning the git repository. Create
+archive (_wp_title-0.1.0.tar.gz_, etc) or cloning the git repository. Create
 a virtual environment with the command **virtualenv env**, which will
 initialize a directory named 'env' in your current working directory.
 Enable the environment with the command **source bin/activate**, and then
@@ -53,7 +53,7 @@ which _shouldn't_ cause any problems, but weirder things have happened.
 ### Running from an egg
 
 Outside of installing the script and using**wp_title** you can also
-just download and run one of the .egg files. (**./wp-title.0.1.0.egg**).
+just download and run one of the .egg files. (**./wp_title-0.1.0-py2.7.egg**).
 However, this will require you to have the wikipedia package for Python
 installed, which is pretty difficult without setuptools!
 
