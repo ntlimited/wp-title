@@ -15,9 +15,9 @@ you can automatically name and move the episodes to a location. For example, if
 you have a media share with a directory for TV set up at /media/shared/TV, you
 can simply use the following command to move and title all those files:
 
-...
+```
 wp-title --to /media/shared/TV ./Dexter.S02
-...
+```
 
 This will create a directory at /media/shared/TV/Dexter/Season 2/ and
 copy the files into it, named things like "01 - It's Alive!.mkv". You can
@@ -98,11 +98,11 @@ in the conf file are purely related to storage, where you want your media
 copied to when it is re-titled. The **storage.root** key sets the root
 directory for copying files. Here's an example fully configured conf:
 
-...
+```
 [storage]
 root=/home/unixname/Video/TV
 anime=Anime
-...
+```
 
 The **storage.root** key defines the base path for all media when copied,
 while **storage.anime** defines a special subdirectory within that base
