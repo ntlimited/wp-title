@@ -12,6 +12,8 @@ import time
 import wikipedia
 from bs4 import BeautifulSoup
 
+import wp_config
+
 parser = argparse.ArgumentParser(description="Copy and rename television episodes")
 parser.add_argument('directory', metavar='directory', type=str, nargs='+', help='Directory or directories containing downloaded episodes. Note that the same flag set is used for each directory given, meaning that if the name or season flags are passed unwanted behavior may result. Passing multiple directories is best used when the name/season are auto-detect friendly and sources/etc are all the same')
 parser.add_argument('-n', '--name', dest='name', help='Name of show, used to name the folder that files will be moved under and (by default) for wikipedia lookups', default=None)
@@ -34,6 +36,7 @@ parser.add_argument('--filler', dest='filler', default=None, help='Filler episod
 parser.add_argument('--offset', dest='offset', default=0, type=int, help='Episode number offset (used for combining split seasons) - if an episode collection begins at episode 8, --offset 7 would properly number and title the given episodes')
 parser.add_argument('--missing', dest='missing', default=0, type=int, help='Episodes missing from the tail end of the season (used for combining split seasons) - if an episode collection ends with episode 7 but the season is 14 episodes long, --missing 7 will allow the script to account for the "missing" files')
 parser.add_argument('--multititle', dest='multititle', default=False, action='store_const', const=True, help='For episodes that have multiple titles on Wikipedia (expressed by multiple sections encapsulated by double quotes on the episode listing), record all, separated by " - ". Can also be useful for anime titles if the both English and Japanese titles are desired.')
+parser.add_argument('-c', '-config', dest='config', default=None, help='Set a different path to read config from (by default, ~/.config/wp_title.conf is read)')
 #parser.add_argument('--merged', dest='merged', default=None, help='For episodes that are split into multiple files (e.g. "Part 1/2/3") but treated by Wikipedia as a single episode, they can be merged together using the syntax 5:6,10:12, etc. For multi-season jobs, merges for a specific season can be expressed via season.episode:episode, e.g. 5.5:6, 5.10:12, and so on. A series name may also be included, e.g. "The Simpsons.5.5:6"')
 
 guess_regex = (re.compile(r"^([A-Za-z0-9\ '\._-]+)[Ss](\d+)"),
@@ -44,8 +47,6 @@ guess_regex = (re.compile(r"^([A-Za-z0-9\ '\._-]+)[Ss](\d+)"),
 extensions = ('.avi', '.mp4', '.mkv')
 
 is_video = lambda x:reduce(lambda a,b:a or b, [x.endswith(ext) for ext in extensions])
-
-default_location = '/media/media/TV'
 
 class Colorize(object):
     '''
@@ -141,7 +142,7 @@ class Colorize(object):
         self._buffer = self._buffer + u''.join([unichr(ord(x)) for x in data])
 
     def flush(self):
-        if not self._quiet:print self._buffer
+        if not self._quiet:print(self._buffer)
         self._buffer = u''
 
     def clear(self):
@@ -226,17 +227,22 @@ def main(name=None,
          multititle=False,
          folder=None,
          filler=None,
-         header=None):
+         header=None,
+         config=None):
 
     if quiet:
         if not autoconfirm:
             raise Exception('Quiet mode cannot be used without autoconfirm (-a)')
         C.quiet()
 
+    if config:
+        wp_config.override_config(config)
+
     if japanese and not to:
-        to = '%s/Anime' % (default_location,)
+        to = os.path.join(wp_config.get('storage', 'root'),
+                          wp_config.get('storage', 'anime'))
     else:
-        to = default_location
+        to = to or wp_config.get('storage', 'root')
 
     if not name or (not japanese and not season):
         global guess_regex
@@ -535,7 +541,7 @@ def rename_with_namefile(directory, namefile):
     with open(namefile) as handle:
         return [fix_name(x) for x in handle.read().split('\n') if x]
 
-def main():
+def bootstrap():
     args = parser.parse_args()
 
     if len(args.directory) > 1:
@@ -556,4 +562,4 @@ def main():
             raise
 
 if __name__ == '__main__':
-    main()
+    bootstrap()
