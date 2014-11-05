@@ -4,6 +4,26 @@ to a heirarchically arranged repository with the appropriate names for episodes.
 Data is retrieved from Wikipedia, and numerous command line flags exist to
 assist with the sometimes ill-defined "format" of Wikipedia articles.
 
+## What does this do?
+
+Let's say you have Dexter season 2 (you know, the good one) on Blu-Ray and
+you ripped it to a folder on your harddrive and you encoded it to MKV, leaving
+you with a folder called (for example) Dexter.S02 and inside you have 12 files,
+named Dexter.S02E01.mkv through Dexter.S02E12.mkv. This is informative, but
+it's kind of lackluster if you want to find a particular episode. With wp-title,
+you can automatically name and move the episodes to a location. For example, if
+you have a media share with a directory for TV set up at /media/shared/TV, you
+can simply use the following command to move and title all those files:
+
+...
+wp-title --to /media/shared/TV ./Dexter.S02
+...
+
+This will create a directory at /media/shared/TV/Dexter/Season 2/ and
+copy the files into it, named things like "01 - It's Alive!.mkv". You can
+specify multiple directories at once, assuming that the script can guess
+the show name and season number from the directory format.
+
 ## Installing wp_title
 
 Currently, wp_title is not in PyPI (the *Py*thon *P*ackage *I*ndex), so
