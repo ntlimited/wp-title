@@ -212,6 +212,8 @@ foreign language shows may have their translated name in english and the origina
 as well. Using the multitle option will include all names listed, separated by dashes.
 - **-m**, **--move**: Instead of copying files, move them. This is useful if you have
 no need to keep the files in their original location anymore.
+- **-l**, **--link**: Instead of copying files, create a hard link instead. This is \*nix
+only, as Windows does not support hard links.
 - **-q**, **--quiet**: Don't print any output and work silently. A classic command line
 flag mainly included for nostalgia.
 - **-a**, **--autoconfirm**: Don't confirm before moving files. This is slightly dangerous,

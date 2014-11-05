@@ -32,6 +32,7 @@ parser.add_argument('--namefile', dest='namefile', help='Optional name file to u
 parser.add_argument('--header', dest='header', default=None, help='Set alternate section header to search for on Wikipedia page that has the episode listing')
 parser.add_argument('--web', dest='from_web', default=False, action='store_const', const=True, help='Flag to mark episodes as being from a web source, changing the name of the created folder for the season')
 parser.add_argument('--tv', dest='from_tv', default=False, action='store_const', const=True, help='Flag to mark episodes as being from a TV source, changing the name of the created folder for the season')
+parser.add_argument('-l', '--link', dest='link', default=False, action='store_const', const=True, help='Create hard links instead of copying files')
 parser.add_argument('--filler', dest='filler', default=None, help='Filler episode numbers to remove')
 parser.add_argument('--offset', dest='offset', default=0, type=int, help='Episode number offset (used for combining split seasons) - if an episode collection begins at episode 8, --offset 7 would properly number and title the given episodes')
 parser.add_argument('--missing', dest='missing', default=0, type=int, help='Episodes missing from the tail end of the season (used for combining split seasons) - if an episode collection ends with episode 7 but the season is 14 episodes long, --missing 7 will allow the script to account for the "missing" files')
@@ -211,6 +212,7 @@ def main(name=None,
          season=None,
          namefile=None,
          move=False,
+         link=False,
          to=None,
          directory=[],
          british=False,
@@ -237,6 +239,9 @@ def main(name=None,
 
     if config:
         wp_config.override_config(config)
+
+    if move and link:
+        raise Exception('Cannot both move and link files')
 
     if japanese and not to:
         to = os.path.join(wp_config.get('storage', 'root'),
@@ -349,7 +354,7 @@ def main(name=None,
 
         size = os.stat(source).st_size >> 20
 
-        if not move:
+        if not move and not link:
             C('\tcopying ', C.a.user(size), ' megabytes to ', C.a.program(target))()
         
             start = time.time()
@@ -360,10 +365,13 @@ def main(name=None,
               ' seconds (',
               C.a.program('%.2f' % (size/elapsed,),
               'MB/s',')'))()
-        else:
+        elif move:
             C('\tmoving ', C.a.user(size>>20), ' megabytes to ', C.a.program(target))()
 
             shutil.move(source, target)
+        elif link:
+            C('\tlinking', C.a.user(target), ' to ', C.a.user(source))()
+            os.link(source, target)
 
     C(C.white('done'))()
 
